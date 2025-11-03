@@ -66,9 +66,10 @@ type RichTextEditorProps = {
   onUpdate?: ({ editor }: { editor: Editor }) => void;
   getEditor?: (editor: Editor) => void;
   editorClassName?: string;
+  showEditButton?: boolean;
 };
 
-export function RichTextEditor({ name, defaultValue, placeholder, onUpdate, getEditor, editorClassName }: RichTextEditorProps) {
+export function RichTextEditor({ name, defaultValue, placeholder, onUpdate, getEditor, editorClassName, showEditButton = true }: RichTextEditorProps) {
   const [isToolbarVisible, setIsToolbarVisible] = useState(false);
   
   const editor = useEditor({
@@ -106,9 +107,6 @@ export function RichTextEditor({ name, defaultValue, placeholder, onUpdate, getE
     },
   });
 
-  //if(editor) editor.commands.setFontSize('12px')
-
-  
   useEffect(() => {
     if (editor && getEditor) {
       getEditor(editor);
@@ -130,15 +128,16 @@ export function RichTextEditor({ name, defaultValue, placeholder, onUpdate, getE
       <input type="hidden" name={name} value={editor?.getHTML() || ''} />
       <Toolbar editor={editor} isVisible={isToolbarVisible} />
       <EditorContent editor={editor} placeholder={placeholder} />
-       <Button 
-        type="button" 
-        variant="ghost" 
-        size="icon"
-        className="absolute bottom-1 right-1 h-7 w-7 text-muted-foreground"
-        onClick={() => setIsToolbarVisible(!isToolbarVisible)}
-      >
+      {showEditButton && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="absolute bottom-1 right-1 h-7 w-7 text-muted-foreground"
+          onClick={() => setIsToolbarVisible(!isToolbarVisible)}
+        > 
         <Edit className="h-4 w-4" />
-      </Button>
+      </Button>)}
     </div>
   );
 }

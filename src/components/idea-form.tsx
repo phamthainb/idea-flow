@@ -269,7 +269,7 @@ export function IdeaForm({ idea, action, userId }: IdeaFormProps) {
                 ) : (
                   <Sparkles className="h-4 w-4 text-yellow-400" />
                 )}
-                Gợi ý bằng AI
+                AI
               </Button>
             </div>
             <RichTextEditor
@@ -304,7 +304,7 @@ export function IdeaForm({ idea, action, userId }: IdeaFormProps) {
                 ) : (
                   <PenLine className="h-4 w-4 text-blue-400" />
                 )}
-                Viết lại bằng AI
+                AI
               </Button>
             </div>
             <RichTextEditor
@@ -333,7 +333,7 @@ export function IdeaForm({ idea, action, userId }: IdeaFormProps) {
                 ) : (
                   <Sparkles className="h-4 w-4 text-yellow-400" />
                 )}
-                Gợi ý bằng AI
+                AI
               </Button>
             </div>
             <RichTextEditor
@@ -354,7 +354,7 @@ export function IdeaForm({ idea, action, userId }: IdeaFormProps) {
                  const placeholder = criterion.placeholder?.join('\n') || defaultCrit?.placeholder?.join('\n');
                 return (
                   <div key={criterion.id} className="relative space-y-2 rounded-lg border bg-muted/50 p-4">
-                    <div className="absolute top-2 right-2">
+                    <div className="absolute top-[-2px] right-[-2px]">
                       <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveCriterion(criterion.id)} className="h-7 w-7 text-muted-foreground hover:text-destructive">
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -365,6 +365,7 @@ export function IdeaForm({ idea, action, userId }: IdeaFormProps) {
                         defaultValue={criterion.name}
                         onUpdate={({ editor }) => handleCriterionChange(criterion.id, 'name', editor.getHTML())}
                         placeholder="Tên tiêu chí"
+                        showEditButton={false}
                         editorClassName="min-h-[40px] bg-transparent font-medium border-0 text-base"
                       />
                     </div>
