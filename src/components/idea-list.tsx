@@ -1,11 +1,9 @@
 "use client";
 import { IdeaCard } from "@/components/idea-card";
 import { Button } from "@/components/ui/button";
-import { useUser } from "@/lib/auth";
 import type { Idea } from "@/lib/types";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 const sortOptions = [
   { label: "Mới nhất", value: "date_desc" },
@@ -15,21 +13,8 @@ const sortOptions = [
 ];
 
 export function IdeaList({ initialIdeas }: { initialIdeas: Idea[] }) {
-  const { user } = useUser();
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
   const sort = searchParams.get("sort");
-
-  useEffect(() => {
-    if (!user) {
-      const params = new URLSearchParams(searchParams.toString());
-      if (!params.get("login-modal")) {
-        params.set("login-modal", "true");
-        router.replace(`${pathname}?${params.toString()}`);
-      }
-    }
-  }, [user, searchParams, pathname, router]);
 
   const ideas = initialIdeas;
 
