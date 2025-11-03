@@ -1,51 +1,60 @@
-'use client';
-import Link from "next/link";
-import { useSearchParams } from 'next/navigation';
-import { useUser } from "@/lib/auth";
-import { redirect } from 'next/navigation';
+"use client";
 import { IdeaCard } from "@/components/idea-card";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/lib/auth";
 import type { Idea } from "@/lib/types";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+
+const sortOptions = [
+  { label: "Mới nhất", value: "date_desc" },
+  { label: "Cũ nhất", value: "date_asc" },
+  { label: "Điểm cao nhất", value: "score_desc" },
+  { label: "Điểm thấp nhất", value: "score_asc" },
+];
 
 export function IdeaList({ initialIdeas }: { initialIdeas: Idea[] }) {
-  const { user, signedIn } = useUser();
+  const { user } = useUser();
   const searchParams = useSearchParams();
-  const sort = searchParams.get('sort');
+  const pathname = usePathname();
+  const router = useRouter();
+  const sort = searchParams.get("sort");
 
-  // if (signedIn === false) {
-  //   redirect('/');
-  // }
-  
-  if (!user) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <p>Đang tải...</p>
-      </div>
-    );
-  }
-  
+  useEffect(() => {
+    if (!user) {
+      const params = new URLSearchParams(searchParams.toString());
+      if (!params.get("login-modal")) {
+        params.set("login-modal", "true");
+        router.replace(`${pathname}?${params.toString()}`);
+      }
+    }
+  }, [user, searchParams, pathname, router]);
+
   const ideas = initialIdeas;
-
-  const sortOptions = [
-    { label: 'Mới nhất', value: 'date_desc' },
-    { label: 'Cũ nhất', value: 'date_asc' },
-    { label: 'Điểm cao nhất', value: 'score_desc' },
-    { label: 'Điểm thấp nhất', value: 'score_asc' },
-  ];
 
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <h1 className="text-3xl md:text-4xl font-bold font-headline tracking-tighter">Ý tưởng của bạn</h1>
-            <p className="text-muted-foreground">Đây là tất cả những ý tưởng tuyệt vời mà bạn đã ghi lại.</p>
+          <h1 className="text-3xl md:text-4xl font-bold font-headline tracking-tighter">
+            Ý tưởng của bạn
+          </h1>
+          <p className="text-muted-foreground">
+            Đây là tất cả những ý tưởng tuyệt vời mà bạn đã ghi lại.
+          </p>
         </div>
+
         <div className="flex items-center gap-2 border p-1 rounded-lg bg-card">
-          {sortOptions.map(opt => (
+          {sortOptions.map((opt) => (
             <Button
               key={opt.value}
               asChild
-              variant={(!sort && opt.value === 'date_desc') || sort === opt.value ? "secondary" : "ghost"}
+              variant={
+                (!sort && opt.value === "date_desc") || sort === opt.value
+                  ? "secondary"
+                  : "ghost"
+              }
               size="sm"
             >
               <Link href={`/?sort=${opt.value}`}>{opt.label}</Link>
@@ -53,7 +62,7 @@ export function IdeaList({ initialIdeas }: { initialIdeas: Idea[] }) {
           ))}
         </div>
       </div>
-      
+
       {ideas.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {ideas.map((idea) => (
@@ -62,8 +71,12 @@ export function IdeaList({ initialIdeas }: { initialIdeas: Idea[] }) {
         </div>
       ) : (
         <div className="text-center py-20 border-2 border-dashed rounded-2xl">
-          <h2 className="text-2xl font-bold font-headline mb-2">Chưa có ý tưởng nào!</h2>
-          <p className="text-muted-foreground mb-4">Nhấn vào nút bên dưới để thêm ý tưởng đầu tiên của bạn.</p>
+          <h2 className="text-2xl font-bold font-headline mb-2">
+            Chưa có ý tưởng nào!
+          </h2>
+          <p className="text-muted-foreground mb-4">
+            Nhấn vào nút bên dưới để thêm ý tưởng đầu tiên của bạn.
+          </p>
           <Button asChild>
             <Link href="/ideas/new">+ Ý tưởng mới</Link>
           </Button>

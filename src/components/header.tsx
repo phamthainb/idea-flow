@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { useUser } from '@/lib/auth';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { LoginModal } from './login-modal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,10 +14,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import { usePathname } from 'next/navigation';
 
 export function Header() {
   const { user, signedIn, signOut } = useUser();
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+    const pathname = usePathname();
+
+  // watch query "login-modal" to open login modal automatically when url changes
+  // 
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const showLoginModal = url.searchParams.get("login-modal");
+    if (showLoginModal === "true") {
+      setLoginModalOpen(true);
+    }
+  }, [pathname]);
 
   const handleSignOut = async () => {
     signOut();
