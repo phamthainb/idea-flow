@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useUser } from '@/firebase';
+import { useUser } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { format } from 'date-fns';
 import { Pencil } from 'lucide-react';
@@ -19,11 +19,12 @@ export function IdeaDetail({ idea }: { idea: Idea }) {
   }
 
   if (!user) {
+    console.log("user", user);
     return <div>Đang tải...</div>;
   }
   
   // A simple authorization check
-  if (idea.userId !== user.uid) {
+  if (idea.userId !== user.id) {
       // Or redirect to a 403 page
       redirect('/');
   }

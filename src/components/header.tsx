@@ -2,8 +2,7 @@
 import Link from 'next/link';
 import { Lightbulb, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
-import { useAuth, useUser } from '@/firebase';
-import { getAuth, signOut } from 'firebase/auth';
+import { useUser } from '@/lib/auth';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
   DropdownMenu,
@@ -15,13 +14,10 @@ import {
 } from './ui/dropdown-menu';
 
 export function Header() {
-  const auth = useAuth();
-  const { user, signedIn } = useUser();
+  const { user, signedIn, signOut } = useUser();
 
   const handleSignOut = async () => {
-    if (auth) {
-      await signOut(auth);
-    }
+    signOut();
   };
 
   return (

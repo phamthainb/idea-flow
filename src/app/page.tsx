@@ -1,8 +1,6 @@
 'use server';
 import { getIdeas } from "@/lib/data";
 import { IdeaList } from "@/components/idea-list";
-import { getAuth } from "firebase-admin/auth";
-import { app } from "@/firebase/server";
 
 export default async function Home({
   searchParams,
@@ -15,10 +13,10 @@ export default async function Home({
     // redirect('/login');
   }
   // This is a placeholder. In a real app, you'd get the user from the session.
-  const user = { uid: 'test-user' }; // Placeholder
+  const user = { id: 'demo-user' }; // Placeholder
   
-  const sort = typeof searchParams.sort === 'string' ? searchParams.sort : null;
-  const ideas = getIdeas(user.uid, sort);
+  const sort = typeof searchParams?.sort === 'string' ? searchParams?.sort : null;
+  const ideas = getIdeas(user.id, sort);
 
   return <IdeaList initialIdeas={ideas} />;
 }

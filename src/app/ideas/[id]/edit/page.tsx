@@ -6,10 +6,10 @@ import { IdeaForm } from '@/components/idea-form';
 
 // This is a placeholder for user management.
 // In a real app, you'd get the user from the session.
-const user = { uid: 'test-user' }; // Placeholder
+const user = { id: 'demo-user' }; // Placeholder
 
 export default async function EditIdeaPage({ params }: { params: { id: string } }) {
-  const idea = getIdeaById(user.uid, params.id);
+  const idea = getIdeaById(user.id, params.id);
 
   if (!idea) {
     notFound();
@@ -19,7 +19,7 @@ export default async function EditIdeaPage({ params }: { params: { id: string } 
 
   return (
     <div className="max-w-4xl mx-auto">
-      <IdeaForm idea={idea} action={updateIdeaWithId} userId={user.uid} />
+      <IdeaForm idea={idea} action={updateIdeaWithId} userId={user.id} />
     </div>
   );
 }

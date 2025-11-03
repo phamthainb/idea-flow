@@ -9,8 +9,6 @@ import { aiSuggestName } from '@/ai/flows/ai-suggest-name';
 import { aiSuggestTags } from '@/ai/flows/ai-suggest-tags';
 import { aiRewriteDescription } from '@/ai/flows/ai-rewrite-description';
 import type { Criterion } from './types';
-import { getAuth } from "firebase-admin/auth";
-import { app } from "@/firebase/server";
 
 
 // Helper to strip HTML tags

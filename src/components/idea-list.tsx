@@ -1,7 +1,7 @@
 'use client';
 import Link from "next/link";
 import { useSearchParams } from 'next/navigation';
-import { useUser } from "@/firebase";
+import { useUser } from "@/lib/auth";
 import { redirect } from 'next/navigation';
 import { IdeaCard } from "@/components/idea-card";
 import { Button } from "@/components/ui/button";
