@@ -4,6 +4,8 @@ import { Lightbulb, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
 import { useUser } from '@/lib/auth';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { LoginModal } from './login-modal';
+import { useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +17,7 @@ import {
 
 export function Header() {
   const { user, signedIn, signOut } = useUser();
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   const handleSignOut = async () => {
     signOut();
@@ -56,12 +59,19 @@ export function Header() {
           )}
 
           {signedIn === false && (
-            <Button asChild variant="outline">
-              <Link href="/login">Đăng nhập</Link>
+            <Button 
+              variant="outline" 
+              onClick={() => setLoginModalOpen(true)}
+            >
+              Đăng nhập
             </Button>
           )}
         </div>
       </div>
+      <LoginModal 
+        open={loginModalOpen} 
+        onOpenChange={setLoginModalOpen} 
+      />
     </header>
   );
 }

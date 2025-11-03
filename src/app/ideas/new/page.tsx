@@ -7,9 +7,9 @@ import { redirect } from 'next/navigation';
 export default function NewIdeaPage() {
   const { user, signedIn } = useUser();
 
-  if (signedIn === false) {
-    redirect('/login');
-  }
+  // if (signedIn === false) {
+  //   redirect('/');
+  // }
 
   if (!user) {
     return <div>Đang tải...</div>;

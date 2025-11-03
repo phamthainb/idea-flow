@@ -15,7 +15,7 @@ export function IdeaDetail({ idea }: { idea: Idea }) {
   const { user, signedIn } = useUser();
 
   if (signedIn === false) {
-    redirect('/login');
+    // redirect('/');
   }
 
   if (!user) {
@@ -26,7 +26,7 @@ export function IdeaDetail({ idea }: { idea: Idea }) {
   // A simple authorization check
   if (idea.userId !== user.id) {
       // Or redirect to a 403 page
-      redirect('/');
+      // redirect('/');
   }
 
   const totalScore = idea.scores.reduce((acc, s) => acc + s.score, 0) / (idea.scores.length || 1);

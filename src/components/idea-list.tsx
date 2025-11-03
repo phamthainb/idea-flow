@@ -12,9 +12,9 @@ export function IdeaList({ initialIdeas }: { initialIdeas: Idea[] }) {
   const searchParams = useSearchParams();
   const sort = searchParams.get('sort');
 
-  if (signedIn === false) {
-    redirect('/login');
-  }
+  // if (signedIn === false) {
+  //   redirect('/');
+  // }
   
   if (!user) {
     return (
