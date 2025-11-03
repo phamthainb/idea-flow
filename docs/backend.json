@@ -1,0 +1,112 @@
+{
+  "entities": {
+    "Idea": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Idea",
+      "type": "object",
+      "description": "Represents an idea submitted by a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Idea entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name or title of the idea."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the idea."
+        },
+        "categoryId": {
+          "type": "string",
+          "description": "Reference to Category. (Relationship: Category 1:N Idea)"
+        },
+        "customCriteria": {
+          "type": "array",
+          "description": "A list of custom criteria defined for the idea.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "aiScore": {
+          "type": "number",
+          "description": "The AI-generated score for the idea."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description"
+      ]
+    },
+    "Category": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Category",
+      "type": "object",
+      "description": "Represents a category or tag for ideas.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Category entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the category."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous",
+      "google.com"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/categories/{categoryId}",
+        "definition": {
+          "entityName": "Category",
+          "schema": {
+            "$ref": "#/backend/entities/Category"
+          },
+          "description": "Stores categories. 'categoryId' is the unique identifier for the category.",
+          "params": [
+            {
+              "name": "categoryId",
+              "description": "The unique identifier for the category."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/ideas/{ideaId}",
+        "definition": {
+          "entityName": "Idea",
+          "schema": {
+            "$ref": "#/backend/entities/Idea"
+          },
+          "description": "Stores ideas created by a specific user. 'userId' is the user's ID, and 'ideaId' is the unique identifier for the idea.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "ideaId",
+              "description": "The unique identifier for the idea."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to address the application's requirements while prioritizing security, scalability, and debuggability.  Authorization Independence is achieved through the chosen structure, avoiding hierarchical `get()` calls in security rules.  The structure uses path-based ownership for user-specific data and denormalization to ensure atomic operations.  Structural Segregation ensures all documents in a collection have the same security requirements. The QAPs are supported via structural segregation.\n\nSpecifically:\n\n*   `/categories`: Stores category data accessible for reading by any user. This collection will need open read access, but restricted write access for admins only.\n*   `/users/{userId}/ideas`: This path provides secure and simple ownership-based security rules. Each user can create, read, update, and delete their ideas.\n\nThis structure promotes clear, maintainable security rules and efficient data retrieval while adhering to the core design principles."
+  }
+}

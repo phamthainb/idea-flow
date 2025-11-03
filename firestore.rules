@@ -1,0 +1,88 @@
+/**
+ * @fileoverview Firestore Security Rules for the application.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for ideas and allows public read access to categories.
+ *
+ * Data Structure:
+ * - Categories are stored in the `/categories/{categoryId}` collection.
+ * - User-specific ideas are stored in the `/users/{userId}/ideas/{ideaId}` collection.
+ *
+ * Key Security Decisions:
+ * - Users can only manage their own ideas.
+ * - Categories are publicly readable but writes are not allowed in this prototype.
+ * - Listing of user ideas is restricted to the owner.
+ *
+ * Denormalization for Authorization:
+ * - The rules rely on the path `/users/{userId}` matching the authenticated user's ID (`request.auth.uid`) to establish ownership.
+ *   Writes to the `/users/{userId}/ideas/{ideaId}` collection will require that the `userId` path parameter always matches `request.auth.uid`.
+ *
+ * Structural Segregation:
+ * - Separate collections are used for public categories and private user data.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Allows public read access to categories. Writes are denied.
+     * @path /categories/{categoryId}
+     * @allow get, list: Any user can read the category.
+     * @deny create, update, delete: No user can create, update, or delete categories in this prototype.
+     * @principle Public read access for categories.
+     */
+    match /categories/{categoryId} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+    }
+
+    /**
+     * @description Manages ideas for a specific user. Only the owner can create, read, update, and delete their own ideas.
+     * @path /users/{userId}/ideas/{ideaId}
+     * @allow create: User A (auth.uid = "user_a") can create a new idea under /users/user_a/ideas/idea_1.
+     * @allow get, list: User A (auth.uid = "user_a") can read their own idea under /users/user_a/ideas/idea_1.
+     * @allow update: User A (auth.uid = "user_a") can update their own idea under /users/user_a/ideas/idea_1.
+     * @allow delete: User A (auth.uid = "user_a") can delete their own idea under /users/user_a/ideas/idea_1.
+     * @deny create: User B (auth.uid = "user_b") cannot create an idea under /users/user_a/ideas/idea_1.
+     * @deny get, list: User B (auth.uid = "user_b") cannot read User A's idea under /users/user_a/ideas/idea_1.
+     * @deny update: User B (auth.uid = "user_b") cannot update User A's idea under /users/user_a/ideas/idea_1.
+     * @deny delete: User B (auth.uid = "user_b") cannot delete User A's idea under /users/user_a/ideas/idea_1.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/ideas/{ideaId} {
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId) && resource != null;
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+    }
+  }
+
+  // --- Helper functions ---
+
+  /**
+   * @description Checks if the user is signed in.
+   * @return {bool} True if the user is signed in, false otherwise.
+   */
+  function isSignedIn() {
+    return request.auth != null;
+  }
+
+  /**
+   * @description Checks if the user is the owner of the resource.
+   * @param {string} userId The user ID to check against the request's auth UID.
+   * @return {bool} True if the user ID matches the request's auth UID, false otherwise.
+   */
+  function isOwner(userId) {
+    return request.auth.uid == userId;
+  }
+
+  /**
+   * @description Checks if the user is the owner of the resource and if the resource exists.
+   * @param {string} userId The user ID to check against the request's auth UID.
+   * @return {bool} True if the user ID matches the request's auth UID and the resource exists, false otherwise.
+   */
+  function isExistingOwner(userId) {
+    return isOwner(userId) && resource != null;
+  }
+}
